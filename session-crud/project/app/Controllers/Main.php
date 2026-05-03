@@ -145,6 +145,15 @@ class Main extends BaseController
     return view("llistat_jugadors", ["jugadors" => $jugadors]);
   }
 
+  public function mostrarFoto($nomFixer)
+  {
+    $path = WRITEPATH . 'uploads/' . $nomFixer;
+    if (!file_exists($path)) {
+      throw new \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
+    }
+    return $this->response->download($path, null)->inline();
+  }
+
   public function eliminarJugador()
   {
     if ($this->request->is("post")) {
