@@ -24,4 +24,34 @@ class AuthTest extends CIUnitTestCase
         ]);
         $result->assertRedirectTo('/');
     }
+
+    public function testInvalidLoginPost()
+    {
+        $result = $this->post('/login', [
+            'username' => 'viladoms',
+            'password' => 'wrongpassword'
+        ]);
+        $result->assertNotRedirectTo('/');
+        $this->assertNotNull(session()->get('error'));
+    }
+
+    public function testLoginSetsSession()
+    {
+        $this->post('/login', [
+            'username' => 'viladoms',
+            'password' => 'JVjv2026'
+        ]);
+        $this->assertTrue(session()->get('logged_in') === true);
+    }
+
+    public function testLogout()
+    {
+        $this->post('/login', [
+            'username' => 'viladoms',
+            'password' => 'JVjv2026'
+        ]);
+        $result = $this->get('/logout');
+        $result->assertRedirectTo('/login');
+        $this->assertNull(session()->get('logged_in'));
+    }
 }
