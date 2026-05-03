@@ -1,0 +1,60 @@
+services:
+  # Servicio de CodeIgniter 4
+  codeigniter4:
+    image: shinsenter/codeigniter4:latest
+    container_name: codeigniter4
+    restart: always
+    ports:
+      - "8080:80"
+    volumes:
+      - ./project:/var/www/html
+    networks:
+      - teams_network
+    depends_on:
+      - db
+    environment:
+      - CI_ENVIRONMENT=development
+      - database.default.hostname=db
+      - database.default.database=esportDaw
+      - database.default.username=user_ci
+      - database.default.password=pass_ci
+      - database.default.DBDriver=MySQLi
+
+  # Servicio de Base de Datos MySQL
+  db:
+    image: mysql:8.0
+    container_name: teams_db_mysql
+    restart: always
+    environment:
+      MYSQL_DATABASE: teams_db
+      MYSQL_USER: user_ci
+      MYSQL_PASSWORD: pass_ci
+      MYSQL_ROOT_PASSWORD: root_password
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - teams_network
+
+  # Servicio de phpMyAdmin
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: teams_phpmyadmin
+    restart: always
+    ports:
+      - "8081:80"
+    environment:
+      - PMA_HOST=db
+      - MYSQL_ROOT_PASSWORD=root_password
+    networks:
+      - teams_network
+    depends_on:
+      - db
+
+# Red personalizada para este proyecto
+networks:
+  teams_network:
+    driver: bridge
+
+# Volumen para la base de datos
+volumes:
+  db_data:
